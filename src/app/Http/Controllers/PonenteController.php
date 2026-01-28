@@ -2,25 +2,24 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Evento;
+use App\Models\Ponente;
 use Illuminate\Http\Request;
 
-// Agregar la clase Validator para validar los datos de la peticion
 use Illuminate\Support\Facades\Validator;
 
-class EventoController extends Controller
+class PonenteController extends Controller
 {
     /**
-     * Mostrar una lista del recurso.
+     * Display a listing of the resource.
      */
     public function index()
     {
         // Recuperar todos los recursos
-        $eventos = Evento::all();
+        $ponentes = Ponente::all();
 
         // Retornar los recursos recuperados
         $respuesta = [
-            'eventos' => $eventos,
+            'ponentes' => $ponentes,
             'status' => 200,
         ];
         return response()->json($respuesta);
@@ -32,11 +31,9 @@ class EventoController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'titulo' => 'required',
-            'descripcion' => 'required',
-            'fecha_inicio' => 'required|date',
-            'fecha_fin' => 'required|date',
-            'ubicacion' => 'required',
+            'nombre' => 'required',
+            'biografia' => 'required',
+            'especialidad' => 'required',
         ]);
 
         if ($validator->fails()) {
@@ -47,20 +44,17 @@ class EventoController extends Controller
             ], 400);
         }
 
-        $evento = Evento::create($request->only([
-            'titulo',
-            'descripcion',
-            'fecha_inicio',
-            'fecha_fin',
-            'ubicacion'
+        $ponente = Ponente::create($request->only([
+            'nombre',
+            'biografia',
+            'especialidad'
         ]));
 
         return response()->json([
-            'evento' => $evento,
+            'ponente' => $ponente,
             'status' => 201,
         ], 201);
     }
-
 
     /**
      * Display the specified resource.
@@ -68,11 +62,11 @@ class EventoController extends Controller
     public function show($id)
     {
         // Recuperar el recurso especificado
-        $evento = Evento::find($id);
+        $ponente = Ponente::find($id);
         // Si el recurso no se pudo recuperar, retornar un mensaje de error
-        if (!$evento) {
+        if (!$ponente) {
             $respuesta = [
-                'message' => 'Evento no encontrado',
+                'message' => 'Ponente no encontrado',
                 'status' => 404, // No encontrado
             ];
             return response()->json($respuesta, 404);
@@ -80,7 +74,7 @@ class EventoController extends Controller
 
         // Retornar el recurso recuperado
         $respuesta = [
-            'evento' => $evento,
+            'ponente' => $ponente,
             'status' => 200, //ok
         ];
         return response()->json($respuesta);
@@ -92,12 +86,12 @@ class EventoController extends Controller
     public function update(Request $request, $id)
     {
         // Recuperar el recurso especificado en el almacenamiento
-        $evento = Evento::find($id);
+        $ponente = Ponente::find($id);
 
         // Si el recurso no se pudo recuperar, retornar un mensaje de error
-        if (!$evento) {
+        if (!$ponente) {
             $respuesta = [
-                'message' => 'Evento no encontrado',
+                'message' => 'Ponente no encontrado',
                 'status' => 404, // No encontrado
             ];
             return response()->json($respuesta, 404);
@@ -105,11 +99,9 @@ class EventoController extends Controller
 
         // Validar que la petición contenga todos los datos necesarios
         $validator = Validator::make($request->all(), [
-            'titulo' => 'required',
-            'descripcion' => 'required',
-            'fecha_inicio' => 'required|date',
-            'fecha_fin' => 'required|date',
-            'ubicacion' => 'required'
+            'nombre' => 'required',
+            'biografia' => 'required',
+            'especialidad' => 'required'
         ]);
 
         // Si la petici[on no contiene todos los datos necesarios, retornar un mensaje de error
@@ -122,16 +114,14 @@ class EventoController extends Controller
         }
 
         // Actualizar el recurso especificado con los datos de la petición
-        $evento->titulo = $request->titulo;
-        $evento->descripcion = $request->descripcion;
-        $evento->fecha_inicio = $request->fecha_inicio;
-        $evento->fecha_fin = $request->fecha_fin;
-        $evento->ubicacion = $request->ubicacion;
-        $evento->save();
+        $ponente->nombre = $request->nombre;
+        $ponente->biografia = $request->biografia;
+        $ponente->especialidad = $request->especialidad;
+        $ponente->save();
 
         //Retornar el recurso actualizado
         $respuesta = [
-            'evento' => $evento,
+            'ponente' => $ponente,
             'status' => 200, // ok 
         ];
         return response()->json($respuesta);
@@ -139,30 +129,29 @@ class EventoController extends Controller
 
     /**
      * Remove the specified resource from storage.
-     * Eliminar el recurso especificado del almacenamiento
      */
     public function destroy($id)
     {
         // Recuperar el recurso especificado
 
-        $evento = Evento::find($id);
+        $ponente = Ponente::find($id);
 
         // Si el recurso no se pudo recuperar, retornar un mensaje de error
 
-        if (!$evento) {
+        if (!$ponente) {
             $respuesta = [
-                'message' => 'Evento no encontrado',
+                'message' => 'Ponente no encontrado',
                 'status' => 404, // No encontrado
             ];
             return response()->json($respuesta, 404);
         }
 
         // Eliminar el recurso especificado
-        $evento->delete();
+        $ponente->delete();
 
         // Retornar un mensaje de éxito
         $respuesta = [
-            'message' => 'Evento eliminado',
+            'message' => 'Ponente eliminado',
             'status' => 200, // ok
         ];
         return response()->json($respuesta);
