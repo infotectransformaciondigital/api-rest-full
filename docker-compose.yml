@@ -1,0 +1,55 @@
+services:
+  mariadb:
+    image: 'bitnami/mariadb:latest'
+    environment:
+      - MARIADB_ROOT_PASSWORD=root123!
+      - MARIADB_USER=bn_myapp
+      - MARIADB_DATABASE=bitnami_myapp
+      - MARIADB_PASSWORD=b1tnam1_my@pp
+    volumes:
+      - 'mariadb_data:/bitnami/mariadb'
+  application:
+    image: 'bitnami/laravel:latest'
+    environment:
+      - LARAVEL_DATABASE_TYPE=mysql
+      - LARAVEL_DATABASE_HOST=mariadb
+      - LARAVEL_DATABASE_PORT_NUMBER=3306
+      - LARAVEL_DATABASE_NAME=bitnami_myapp
+      - LARAVEL_DATABASE_USER=bn_myapp
+      - LARAVEL_DATABASE_PASSWORD=b1tnam1_my@pp
+      - BITNAMI_DEBUG=true
+    ports:
+      - '8000:8000'
+    volumes:
+      - './src:/app'
+    depends_on:
+      - mariadb
+    entrypoint: ['/bin/sh', '-c']
+    command:
+      - |
+        # 1. Si no existe el archivo artisan, instalamos Laravel nuevo
+        if [ ! -f "artisan" ]; then
+            echo "No se encontró instalación de Laravel. Creando proyecto nuevo..."
+            # Borramos todo para permitir create-project (requiere carpeta vacía)
+            rm -rf *
+            composer create-project laravel/laravel .
+        fi
+
+        # 2. Configuración post-instalación
+        # Copiamos variables de entorno si hace falta o instalamos dependencias
+        if [ ! -d "vendor" ]; then composer install; fi
+        
+        # 3. Esperar a la base de datos
+        echo "Esperando a la base de datos..."
+        sleep 10
+        
+        # 4. Migraciones y arranque
+        php artisan migrate --force
+        php artisan serve --host=0.0.0.0 --port=8000
+    # ------------------------
+volumes:
+  mariadb_data:
+    driver: local
+networks:
+  laravel-network:
+    driver: bridge
