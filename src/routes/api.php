@@ -13,21 +13,8 @@ use App\Http\Controllers\PonenteController;
 // Obtener todos los eventos
 Route::get('/eventos', [EventoController::class, 'index']); 
 
-// Guardar un nuevo evento
-Route::post('/eventos', [EventoController::class, 'store']);
-
 // Obtener un evento específico
 Route::get('/eventos/{id}', [EventoController::class, 'show']);
-
-// Actualizar un evento existente
-Route::put('/eventos/{id}', [EventoController::class, 'update']);
-
-// Eliminar un evento específico
-Route::delete('/eventos/{id}', [EventoController::class, 'destroy']);
-
-// Eliminar todos los eventos
-Route::delete('/eventos', [EventoController::class, 'destroyAll']);
-
 
 /**
  * Rutas para el recurso Ponente
@@ -50,3 +37,20 @@ Route::delete('/ponentes/{id}', [PonenteController::class, 'destroy']);
 
 // Eliminar todos los ponentes
 Route::delete('/ponentes', [PonenteController::class, 'destroyAll']);
+
+
+
+Route::middleware('auth:api')->group(function () {
+    // Guardar un nuevo evento
+    Route::post('/eventos', [EventoController::class, 'store']);
+
+    // Actualizar un evento existente
+    Route::put('/eventos/{id}', [EventoController::class, 'update']);
+
+    // Eliminar un evento específico
+    Route::delete('/eventos/{id}', [EventoController::class, 'destroy']);
+
+    // Eliminar todos los eventos
+    Route::delete('/eventos', [EventoController::class, 'destroyAll']);
+
+});
